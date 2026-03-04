@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const carousel = document.querySelector('.carousel');
 
     if (carousel) {
-        const scrollStep = 320;
+        const scrollStep = carousel.offsetWidth * 0.9;
 
         if (carouselPrev) {
             carouselPrev.addEventListener('click', () => {
