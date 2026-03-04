@@ -942,6 +942,10 @@ button {
 }
 
 @media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+
   .header-content {
     flex-direction: column;
   }
@@ -955,44 +959,53 @@ button {
   .salgados-fritos,
   .salgados-assados,
   .salgados-congelados {
-    padding: 30px 15px;
+    padding: 20px 12px;
   }
 
   .combos h2,
   .salgados-fritos h2,
   .salgados-assados h2,
   .salgados-congelados h2 {
-    font-size: 1.5rem;
-    margin-bottom: 25px;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
   }
 
   .salgados-grid {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 20px;
+  }
+
+  .salgado-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .salgado-card img {
+    height: 160px;
   }
 
   .salgado-card h3 {
-    font-size: 1rem;
-    padding: 15px 15px 5px;
+    font-size: 0.95rem;
+    padding: 12px 12px 5px;
   }
 
   .card-desc {
-    font-size: 0.8rem;
-    padding: 0 15px;
-    margin-bottom: 10px;
+    font-size: 0.75rem;
+    padding: 0 12px;
+    margin-bottom: 8px;
   }
 
   .card-price {
-    font-size: 1.1rem;
-    padding: 0 15px;
-    margin-bottom: 10px;
+    font-size: 1rem;
+    padding: 0 12px;
+    margin-bottom: 8px;
   }
 
   .btn-add-salgado {
-    width: calc(100% - 30px);
-    margin: 0 15px 15px;
-    padding: 10px;
-    font-size: 0.9rem;
+    width: calc(100% - 24px);
+    margin: 0 12px 12px;
+    padding: 8px;
+    font-size: 0.85rem;
+    height: 36px;
   }
 
   .carousel-item {
@@ -1001,10 +1014,5 @@ button {
 
   .order-container {
     padding: 20px;
-  }
-
-  .btn-whatsapp {
-    width: 100%;
-    text-align: center;
   }
 }
