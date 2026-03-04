@@ -1,5 +1,5 @@
 :root {
-  --cor-primaria: #25D366;
+  --cor-primaria: #8B5E3C;
   --cor-secundaria: #ffc107;
   --cor-fundo: #f7f7f7;
   --cor-texto: #333;
@@ -218,7 +218,7 @@ button {
 }
 
 .btn-select:hover {
-  background: #1ebe5a;
+  background: #6e3f24;
   transform: translateY(-2px);
 }
 
@@ -335,7 +335,7 @@ button {
 }
 
 .btn-add-salgado:hover {
-  background: #1ebe5a;
+  background: #6e3f24;
   transform: translateY(-2px);
 }
 

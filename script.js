@@ -348,17 +348,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (carousel) {
         const scrollStep = carousel.offsetWidth * 0.9;
+        const AUTOPLAY_DELAY = 4000; // ms
+        let autoplayInterval = null;
+
+        function scrollNext() {
+            // if we're at (or near) the end, wrap to start
+            if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 5) {
+                carousel.scrollLeft = 0;
+            } else {
+                carousel.scrollLeft += scrollStep;
+            }
+        }
+
+        function startAutoplay() {
+            stopAutoplay();
+            autoplayInterval = setInterval(scrollNext, AUTOPLAY_DELAY);
+        }
+
+        function stopAutoplay() {
+            if (autoplayInterval) {
+                clearInterval(autoplayInterval);
+                autoplayInterval = null;
+            }
+        }
 
         if (carouselPrev) {
             carouselPrev.addEventListener('click', () => {
                 carousel.scrollLeft -= scrollStep;
+                // restart autoplay so user sees next auto step after interaction
+                startAutoplay();
             });
         }
 
         if (carouselNext) {
             carouselNext.addEventListener('click', () => {
                 carousel.scrollLeft += scrollStep;
+                startAutoplay();
             });
         }
+
+        // pause autoplay while user hovers or touches the carousel
+        carousel.addEventListener('mouseenter', stopAutoplay);
+        carousel.addEventListener('mouseleave', startAutoplay);
+        carousel.addEventListener('touchstart', stopAutoplay, { passive: true });
+        carousel.addEventListener('touchend', () => setTimeout(startAutoplay, 1500));
+
+        // start autoplay initially
+        startAutoplay();
     }
 });
