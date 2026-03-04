@@ -221,7 +221,7 @@ button {
   transform: translateY(-2px);
 }
 
-.salgado-card {
+.combos,
 .salgados-fritos,
 .salgados-assados,
 .salgados-congelados {
@@ -434,7 +434,7 @@ button {
   transform: scale(1.1);
 }
 
-/* SEÇÃO DE PEDIDO */
+.order-section {
   padding: 60px 20px;
   background: linear-gradient(135deg, #f0f8ff 0%, #f7f7f7 100%);
 }
@@ -951,7 +951,60 @@ button {
     text-align: center;
   }
 
+  .combos,
+  .salgados-fritos,
+  .salgados-assados,
+  .salgados-congelados {
+    padding: 30px 15px;
+  }
+
+  .combos h2,
+  .salgados-fritos h2,
+  .salgados-assados h2,
+  .salgados-congelados h2 {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+  }
+
+  .salgados-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .salgado-card h3 {
+    font-size: 1rem;
+    padding: 15px 15px 5px;
+  }
+
+  .card-desc {
+    font-size: 0.8rem;
+    padding: 0 15px;
+    margin-bottom: 10px;
+  }
+
+  .card-price {
+    font-size: 1.1rem;
+    padding: 0 15px;
+    margin-bottom: 10px;
+  }
+
+  .btn-add-salgado {
+    width: calc(100% - 30px);
+    margin: 0 15px 15px;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .carousel-item {
+    flex: 0 0 100%;
+  }
+
   .order-container {
     padding: 20px;
+  }
+
+  .btn-whatsapp {
+    width: 100%;
+    text-align: center;
   }
 }
