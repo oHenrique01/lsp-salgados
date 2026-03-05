@@ -59,12 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
             let price = btn.dataset.price || '';
 
             if (qty === 'cento') {
-                price = (type === 'congelado') ? '60' : '75';
+                if (!price) {
+                    price = (type === 'congelado') ? '60' : '75';
+                }
                 btn.dataset.price = price;
                 if (priceElem) priceElem.textContent = `R$ ${price},00`;
                 if (descElem) descElem.textContent = 'Caixa com 100 salgados, informe os sabores e a quantidade desejada';
             } else if (qty === 'meio') {
-                price = (type === 'congelado') ? '35' : '50';
+                if (!price) {
+                    price = (type === 'congelado') ? '35' : '50';
+                }
                 btn.dataset.price = price;
                 if (priceElem) priceElem.textContent = `R$ ${price},00`;
                 if (descElem) descElem.textContent = 'Caixa com 50 salgados, informe os sabores e a quantidade desejada';
@@ -80,22 +84,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const configForm = document.getElementById('config-form');
     const configTotalElem = document.getElementById('config-total');
     const configRequiredElem = document.getElementById('config-required');
+    const configTitleElem = configModal ? configModal.querySelector('.modal-header h2') : null;
     let configRequiredTotal = 100;
 
     let configPrice = 75;
+    let configItemName = 'Pedido Personalizado';
 
-    function openConfigModal(requiredTotal = 100, price = 75) {
+    function openConfigModal(requiredTotal = 100, price = 75, itemName = 'Pedido Personalizado') {
         if (!configModal) return;
         configRequiredTotal = requiredTotal || 100;
         configPrice = price || 75;
+        configItemName = itemName || 'Pedido Personalizado';
         configForm.querySelectorAll('.qty-input').forEach(i => i.value = 0);
+        configForm.querySelectorAll('.qty-input').forEach(i => i.max = String(configRequiredTotal));
         if (configRequiredElem) configRequiredElem.textContent = String(configRequiredTotal);
         if (configTotalElem) configTotalElem.textContent = '0';
+        if (configTitleElem) configTitleElem.textContent = `Personalizar ${configItemName}`;
         const infoP = configModal.querySelector('.modal-body > p');
         if (infoP) infoP.innerHTML = `Distribua exatamente <strong>${configRequiredTotal}</strong> salgados entre os tipos desejados. Use os controles para ajustar as quantidades.`;
         if (configForm) {
             const submitBtn = configForm.querySelector('button[type="submit"]');
-            if (submitBtn) submitBtn.textContent = `Adicionar (${configRequiredTotal} - R$ ${String(configPrice)},00)`;
+            if (submitBtn) submitBtn.textContent = `Adicionar ${configItemName} (R$ ${String(configPrice)},00)`;
         }
         updateConfigTotal();
         configModal.style.display = 'flex';
@@ -180,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (qty > 0) selections.push(`${qty} ${inp.name}`);
             });
 
-            const itemName = `Cento Personalizado: ${selections.join('; ')}`;
+            const itemName = `${configItemName}: ${selections.join('; ')}`;
             const priceValue = Number(configPrice);
             const priceText = priceValue.toFixed(2).replace('.', ',');
             const item = `${itemName} - R$ ${priceText}`;
@@ -206,17 +215,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = btn.dataset.name || '';
             const qty = btn.dataset.quantity || '';
             const type = btn.dataset.type || '';
-            if (qty === 'meio') {
-                let price = 50;
-                if (type === 'congelado') price = 35;
-                openConfigModal(50, price);
-                return;
-            }
-            if (qty === 'cento') {
-                let price = 75;
-                if (type === 'congelado') price = 60;
-                openConfigModal(100, price);
-                return;
+            const dataPrice = Number(btn.dataset.price || '0') || 0;
+
+            if (qty) {
+                let requiredTotal = 0;
+                if (qty === 'meio') {
+                    requiredTotal = 50;
+                } else if (qty === 'cento') {
+                    requiredTotal = 100;
+                } else {
+                    const parsedQty = parseInt(qty, 10);
+                    if (!isNaN(parsedQty) && parsedQty > 0) {
+                        requiredTotal = parsedQty;
+                    }
+                }
+
+                if (requiredTotal > 0) {
+                    let price = dataPrice;
+                    if (!price && qty === 'meio') {
+                        price = type === 'congelado' ? 35 : 50;
+                    }
+                    if (!price && qty === 'cento') {
+                        price = type === 'congelado' ? 60 : 75;
+                    }
+                    openConfigModal(requiredTotal, price, name || 'Pedido Personalizado');
+                    return;
+                }
             }
             let price = btn.dataset.price || '0';
             const item = `${name} - R$ ${price},00`;
