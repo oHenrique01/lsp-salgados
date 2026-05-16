@@ -1,423 +1,329 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const BUSINESS_WHATSAPP = '5513996816089';
-    const STORAGE_KEY = 'lsp_salgados_pedido';
-    let orderItems = [];
-    const modal = document.getElementById('modal-order');
-    const btnCloseModal = document.getElementById('btn-close-modal');
-    const modalForm = document.getElementById('modal-form');
+import { renderOrderModal } from "./components/renderOrderModal.js";
+import { showSuccessMessage } from "./components/showSuccessMessage.js";
+import { loadOrder, removeOrder, saveOrder } from "./storage/orderStorage.js";
+import { createOrderMessage } from "./utils/createOrderMessage.js";
+import { formatMoney } from "./utils/formatMoney.js";
+import { getProductPrice } from "./utils/getProductPrice.js";
+import { getRequiredTotal } from "./utils/getRequiredTotal.js";
 
-    function loadOrderFromStorage() {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                orderItems = JSON.parse(saved);
-            }
-        } catch (e) {
-            console.error('Erro ao acessar localStorage:', e);
-            orderItems = [];
-        }
+const BUSINESS_WHATSAPP = "5513996816089";
+const AUTOPLAY_DELAY = 4000;
+
+const modal = document.getElementById("modal-order");
+const btnCloseModal = document.getElementById("btn-close-modal");
+const btnContinue = document.getElementById("btn-continue-shopping");
+const modalForm = document.getElementById("modal-form");
+
+const configModal = document.getElementById("modal-config");
+const btnCloseConfig = document.getElementById("btn-close-config");
+const btnCancelConfig = document.getElementById("btn-cancel-config");
+const configForm = document.getElementById("config-form");
+const configTotal = document.getElementById("config-total");
+const configRequired = document.getElementById("config-required");
+const configTitle = configModal?.querySelector(".modal-header h2");
+const configInfo = configModal?.querySelector(".modal-body > p");
+const configSubmit = configForm?.querySelector('button[type="submit"]');
+
+let orderItems = loadOrder();
+let configRequiredTotal = 100;
+let configPrice = 75;
+let configItemName = "Pedido Personalizado";
+
+function openModal() {
+  modal.style.display = "flex";
+}
+
+function closeModal() {
+  modal.style.display = "none";
+}
+
+function openConfigModal(requiredTotal, price, itemName) {
+  configRequiredTotal = requiredTotal;
+  configPrice = price;
+  configItemName = itemName;
+
+  configForm.querySelectorAll(".qty-input").forEach((input) => {
+    input.value = 0;
+    input.max = String(configRequiredTotal);
+  });
+
+  configRequired.textContent = String(configRequiredTotal);
+  configTotal.textContent = "0";
+  configTitle.textContent = `Personalizar ${configItemName}`;
+  configInfo.innerHTML = `Distribua exatamente <strong>${configRequiredTotal}</strong> salgados entre os tipos desejados. Use os controles para ajustar as quantidades.`;
+  configSubmit.textContent = `Adicionar ${configItemName} (${formatMoney(configPrice)})`;
+
+  updateConfigTotal();
+  configModal.style.display = "flex";
+}
+
+function closeConfigModal() {
+  configModal.style.display = "none";
+}
+
+function updateConfigTotal() {
+  const inputs = Array.from(configForm.querySelectorAll(".qty-input"));
+  const total = inputs.reduce((sum, input) => sum + Number(input.value || 0), 0);
+
+  configTotal.textContent = String(total);
+
+  // Bloqueia apenas os botoes de soma quando a quantidade exigida ja foi atingida.
+  inputs.forEach((input) => {
+    const increaseButton = input.closest(".qty-control").querySelector(".qty-increase");
+    increaseButton.disabled = total >= configRequiredTotal;
+    increaseButton.style.opacity = total >= configRequiredTotal ? "0.5" : "1";
+  });
+
+  return total;
+}
+
+function renderOrder() {
+  renderOrderModal({
+    items: orderItems,
+    onRemoveItem: (index) => {
+      orderItems.splice(index, 1);
+      saveOrder(orderItems);
+
+      if (orderItems.length === 0) {
+        closeModal();
+        return;
+      }
+
+      renderOrder();
+    },
+  });
+}
+
+function addItemToOrder(item) {
+  orderItems.push(item);
+  saveOrder(orderItems);
+  renderOrder();
+  openModal();
+  showSuccessMessage("Item adicionado ao pedido");
+}
+
+function updatePricesAndDescriptions() {
+  document.querySelectorAll(".btn-add-salgado").forEach((button) => {
+    const card = button.closest(".salgado-card");
+    const price = getProductPrice(button.dataset);
+    const requiredTotal = getRequiredTotal(button.dataset.quantity);
+
+    button.dataset.price = String(price);
+    card.querySelector(".card-price").textContent = formatMoney(price);
+
+    if (requiredTotal > 0) {
+      card.querySelector(".card-desc").textContent =
+        `Caixa com ${requiredTotal} salgados, informe os sabores e a quantidade desejada`;
+    }
+  });
+}
+
+function createConfiguredItem() {
+  const selections = Array.from(configForm.querySelectorAll(".qty-input"))
+    .map((input) => ({
+      name: input.name,
+      quantity: Number(input.value || 0),
+    }))
+    .filter((item) => item.quantity > 0);
+
+  const details = selections.map((item) => `${item.quantity} ${item.name}`).join("; ");
+
+  return {
+    name: `${configItemName}: ${details}`,
+    price: configPrice,
+  };
+}
+
+function handleProductClick(button) {
+  const requiredTotal = getRequiredTotal(button.dataset.quantity);
+  const price = getProductPrice(button.dataset);
+  const name = button.dataset.name || "Pedido Personalizado";
+
+  if (requiredTotal > 0) {
+    openConfigModal(requiredTotal, price, name);
+    return;
+  }
+
+  addItemToOrder({ name, price });
+}
+
+function setupConfigForm() {
+  configForm.addEventListener("click", (event) => {
+    const button = event.target;
+    const isQuantityButton =
+      button.classList.contains("qty-increase") || button.classList.contains("qty-decrease");
+
+    if (!isQuantityButton) return;
+
+    const input = button.closest(".qty-control").querySelector(".qty-input");
+    const currentTotal = updateConfigTotal();
+    let value = Number(input.value || 0);
+
+    if (button.classList.contains("qty-increase") && currentTotal < configRequiredTotal) {
+      value += 1;
     }
 
-    function saveOrderToStorage() {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(orderItems));
-        } catch (e) {
-            console.error('Erro ao salvar no localStorage:', e);
-        }
+    if (button.classList.contains("qty-decrease")) {
+      value = Math.max(0, value - 1);
     }
 
-    loadOrderFromStorage();
+    input.value = Math.min(value, configRequiredTotal);
+    updateConfigTotal();
+  });
 
-    function openModal() {
-        modal.style.display = 'flex';
-    }
-
-    function closeModal() {
-        modal.style.display = 'none';
-    }
-
-    btnCloseModal.addEventListener('click', closeModal);
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
+  configForm.querySelectorAll(".qty-input").forEach((input) => {
+    input.addEventListener("input", () => {
+      const value = Number(input.value || 0);
+      const safeValue = Number.isNaN(value) ? 0 : value;
+      input.value = Math.min(Math.max(0, safeValue), configRequiredTotal);
+      updateConfigTotal();
     });
+  });
 
-    const btnContinue = document.getElementById('btn-continue-shopping');
-    if (btnContinue) {
-        btnContinue.addEventListener('click', closeModal);
+  configForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const total = updateConfigTotal();
+
+    if (total === 0) {
+      alert("Selecione pelo menos 1 item.");
+      return;
     }
 
-    function updatePricesAndDescriptions() {
-        document.querySelectorAll('.btn-add-salgado').forEach(btn => {
-            const card = btn.closest('.salgado-card');
-            const priceElem = card ? card.querySelector('.card-price') : null;
-            const descElem = card ? card.querySelector('.card-desc') : null;
-            const type = btn.dataset.type || '';
-            const qty = btn.dataset.quantity || '';
-            let price = btn.dataset.price || '';
-
-            if (qty === 'cento') {
-                if (!price) {
-                    price = (type === 'congelado') ? '60' : '75';
-                }
-                btn.dataset.price = price;
-                if (priceElem) priceElem.textContent = `R$ ${price},00`;
-                if (descElem) descElem.textContent = 'Caixa com 100 salgados, informe os sabores e a quantidade desejada';
-            } else if (qty === 'meio') {
-                if (!price) {
-                    price = (type === 'congelado') ? '35' : '50';
-                }
-                btn.dataset.price = price;
-                if (priceElem) priceElem.textContent = `R$ ${price},00`;
-                if (descElem) descElem.textContent = 'Caixa com 50 salgados, informe os sabores e a quantidade desejada';
-            }
-        });
+    if (total < configRequiredTotal) {
+      alert(`Voce deve selecionar exatamente ${configRequiredTotal} salgados para prosseguir.`);
+      return;
     }
 
-    updatePricesAndDescriptions();
+    addItemToOrder(createConfiguredItem());
+    closeConfigModal();
+  });
+}
 
-    const configModal = document.getElementById('modal-config');
-    const btnCloseConfig = document.getElementById('btn-close-config');
-    const btnCancelConfig = document.getElementById('btn-cancel-config');
-    const configForm = document.getElementById('config-form');
-    const configTotalElem = document.getElementById('config-total');
-    const configRequiredElem = document.getElementById('config-required');
-    const configTitleElem = configModal ? configModal.querySelector('.modal-header h2') : null;
-    let configRequiredTotal = 100;
+function setupOrderForm() {
+  modalForm.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-    let configPrice = 75;
-    let configItemName = 'Pedido Personalizado';
+    const customer = {
+      name: modalForm.querySelector('input[name="name"]').value,
+      address: modalForm.querySelector('input[name="address"]').value,
+      complement: modalForm.querySelector('input[name="complement"]').value,
+      obs: modalForm.querySelector('textarea[name="obs"]').value,
+    };
 
-    function openConfigModal(requiredTotal = 100, price = 75, itemName = 'Pedido Personalizado') {
-        if (!configModal) return;
-        configRequiredTotal = requiredTotal || 100;
-        configPrice = price || 75;
-        configItemName = itemName || 'Pedido Personalizado';
-        configForm.querySelectorAll('.qty-input').forEach(i => i.value = 0);
-        configForm.querySelectorAll('.qty-input').forEach(i => i.max = String(configRequiredTotal));
-        if (configRequiredElem) configRequiredElem.textContent = String(configRequiredTotal);
-        if (configTotalElem) configTotalElem.textContent = '0';
-        if (configTitleElem) configTitleElem.textContent = `Personalizar ${configItemName}`;
-        const infoP = configModal.querySelector('.modal-body > p');
-        if (infoP) infoP.innerHTML = `Distribua exatamente <strong>${configRequiredTotal}</strong> salgados entre os tipos desejados. Use os controles para ajustar as quantidades.`;
-        if (configForm) {
-            const submitBtn = configForm.querySelector('button[type="submit"]');
-            if (submitBtn) submitBtn.textContent = `Adicionar ${configItemName} (R$ ${String(configPrice)},00)`;
-        }
-        updateConfigTotal();
-        configModal.style.display = 'flex';
+    const message = createOrderMessage(orderItems, customer);
+    const url = `https://wa.me/${BUSINESS_WHATSAPP}?text=${encodeURIComponent(message)}`;
+
+    window.open(url, "_blank");
+    showSuccessMessage("Pedido enviado! Aguarde o contato.");
+
+    setTimeout(() => {
+      modalForm.reset();
+      orderItems = [];
+      removeOrder();
+      closeModal();
+    }, 500);
+  });
+}
+
+function setupCarousel() {
+  const carousel = document.querySelector(".carousel");
+  const carouselPrev = document.getElementById("carousel-prev");
+  const carouselNext = document.getElementById("carousel-next");
+
+  if (!carousel) return;
+
+  const scrollStep = carousel.offsetWidth * 0.9;
+  let autoplayInterval = null;
+
+  function scrollNext() {
+    const isAtEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 5;
+    carousel.scrollLeft = isAtEnd ? 0 : carousel.scrollLeft + scrollStep;
+  }
+
+  function stopAutoplay() {
+    clearInterval(autoplayInterval);
+    autoplayInterval = null;
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    autoplayInterval = setInterval(scrollNext, AUTOPLAY_DELAY);
+  }
+
+  carouselPrev?.addEventListener("click", () => {
+    carousel.scrollLeft -= scrollStep;
+    startAutoplay();
+  });
+
+  carouselNext?.addEventListener("click", () => {
+    carousel.scrollLeft += scrollStep;
+    startAutoplay();
+  });
+
+  carousel.addEventListener("mouseenter", stopAutoplay);
+  carousel.addEventListener("mouseleave", startAutoplay);
+  carousel.addEventListener("touchstart", stopAutoplay, { passive: true });
+  carousel.addEventListener("touchend", () => setTimeout(startAutoplay, 1500));
+
+  startAutoplay();
+}
+
+function setupModalEvents() {
+  btnCloseModal.addEventListener("click", closeModal);
+  btnContinue?.addEventListener("click", closeModal);
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) closeModal();
+  });
+
+  btnCloseConfig.addEventListener("click", closeConfigModal);
+  btnCancelConfig.addEventListener("click", closeConfigModal);
+  configModal.addEventListener("click", (event) => {
+    if (event.target === configModal) closeConfigModal();
+  });
+}
+
+function setupScrollAnimations() {
+  const animatedElements = document.querySelectorAll(".salgado-card, section h2");
+
+  if (!("IntersectionObserver" in window)) {
+    animatedElements.forEach((element) => element.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      });
+    },
+    {
+      rootMargin: "0px 0px -12% 0px",
+      threshold: 0.16,
     }
+  );
 
-    function closeConfigModal() {
-        if (!configModal) return;
-        configModal.style.display = 'none';
-    }
+  animatedElements.forEach((element) => observer.observe(element));
+}
 
-    if (configForm) {
-        configForm.addEventListener('click', (e) => {
-            const target = e.target;
-            if (target.classList.contains('qty-increase') || target.classList.contains('qty-decrease')) {
-                const container = target.closest('.qty-control');
-                const input = container.querySelector('.qty-input');
-                let val = parseInt(input.value || '0', 10);
-                const currentTotal = updateConfigTotal();
-                
-                if (target.classList.contains('qty-increase')) {
-                    if (currentTotal < configRequiredTotal) val++;
-                } else {
-                    val = Math.max(0, val - 1);
-                }
-                
-                if (val > configRequiredTotal) val = configRequiredTotal;
-                input.value = val;
-                updateConfigTotal();
-            }
-        });
+function init() {
+  updatePricesAndDescriptions();
+  setupModalEvents();
+  setupConfigForm();
+  setupOrderForm();
+  setupCarousel();
+  setupScrollAnimations();
 
-        configForm.querySelectorAll('.qty-input').forEach(input => {
-            input.addEventListener('input', () => {
-                let v = parseInt(input.value || '0', 10);
-                if (isNaN(v) || v < 0) v = 0;
-                if (v > configRequiredTotal) v = configRequiredTotal;
-                input.value = v;
-                updateConfigTotal();
-            });
-        });
-    }
+  document.querySelectorAll(".btn-add-salgado").forEach((button) => {
+    button.addEventListener("click", () => handleProductClick(button));
+  });
 
-    function updateConfigTotal() {
-        const total = Array.from(configForm.querySelectorAll('.qty-input'))
-            .reduce((sum, inp) => sum + (parseInt(inp.value || '0', 10) || 0), 0);
-        configTotalElem.textContent = total;
-        configForm.querySelectorAll('.qty-input').forEach(inp => {
-            const incBtn = inp.closest('.qty-control').querySelector('.qty-increase');
-            if (incBtn) {
-                if (total >= configRequiredTotal) {
-                    incBtn.disabled = true;
-                    incBtn.style.opacity = '0.5';
-                } else {
-                    incBtn.disabled = false;
-                    incBtn.style.opacity = '1';
-                }
-            }
-        });
-        return total;
-    }
+  if (orderItems.length > 0) {
+    renderOrder();
+  }
+}
 
-    if (configForm) {
-        configForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const total = updateConfigTotal();
-            if (total === 0) {
-                alert('Selecione pelo menos 1 item.');
-                return;
-            }
-            if (total > configRequiredTotal) {
-                alert(`O total não pode exceder ${configRequiredTotal} salgados.`);
-                return;
-            }
-            if (total < configRequiredTotal) {
-                alert(`Você deve selecionar exatamente ${configRequiredTotal} salgados para prosseguir.`);
-                return;
-            }
-
-            const selections = [];
-            configForm.querySelectorAll('.qty-input').forEach(inp => {
-                const qty = parseInt(inp.value || '0', 10) || 0;
-                if (qty > 0) selections.push(`${qty} ${inp.name}`);
-            });
-
-            const itemName = `${configItemName}: ${selections.join('; ')}`;
-            const priceValue = Number(configPrice);
-            const priceText = priceValue.toFixed(2).replace('.', ',');
-            const item = `${itemName} - R$ ${priceText}`;
-            orderItems.push(item);
-            saveOrderToStorage();
-            renderModal();
-            closeConfigModal();
-            openModal();
-            showSuccessMessage('✓ Item adicionado ao pedido');
-        });
-    }
-
-    if (btnCloseConfig) btnCloseConfig.addEventListener('click', closeConfigModal);
-    if (btnCancelConfig) btnCancelConfig.addEventListener('click', closeConfigModal);
-    if (configModal) {
-        configModal.addEventListener('click', (e) => {
-            if (e.target === configModal) closeConfigModal();
-        });
-    }
-
-    document.querySelectorAll('.btn-add-salgado').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const name = btn.dataset.name || '';
-            const qty = btn.dataset.quantity || '';
-            const type = btn.dataset.type || '';
-            const dataPrice = Number(btn.dataset.price || '0') || 0;
-
-            if (qty) {
-                let requiredTotal = 0;
-                if (qty === 'meio') {
-                    requiredTotal = 50;
-                } else if (qty === 'cento') {
-                    requiredTotal = 100;
-                } else {
-                    const parsedQty = parseInt(qty, 10);
-                    if (!isNaN(parsedQty) && parsedQty > 0) {
-                        requiredTotal = parsedQty;
-                    }
-                }
-
-                if (requiredTotal > 0) {
-                    let price = dataPrice;
-                    if (!price && qty === 'meio') {
-                        price = type === 'congelado' ? 35 : 50;
-                    }
-                    if (!price && qty === 'cento') {
-                        price = type === 'congelado' ? 60 : 75;
-                    }
-                    openConfigModal(requiredTotal, price, name || 'Pedido Personalizado');
-                    return;
-                }
-            }
-            let price = btn.dataset.price || '0';
-            const item = `${name} - R$ ${price},00`;
-            orderItems.push(item);
-            saveOrderToStorage();
-            renderModal();
-            openModal();
-            showSuccessMessage('✓ Item adicionado ao pedido');
-        });
-    });
-
-    function showSuccessMessage(text) {
-        const notification = document.createElement('div');
-        notification.textContent = text;
-        notification.style.cssText = `
-            position: fixed; top: 20px; right: 20px; 
-            background: #25D366; color: white; 
-            padding: 16px 24px; border-radius: 8px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
-            font-weight: 600; z-index: 2000; 
-            animation: slideIn 0.3s ease;
-            max-width: 300px;
-        `;
-        document.body.appendChild(notification);
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => notification.remove(), 300);
-        }, 3500);
-    }
-
-    function renderModal() {
-        const container = document.getElementById('modal-items');
-        const totalElem = document.getElementById('modal-total');
-        if (!container) return;
-
-        container.innerHTML = '';
-        let total = 0;
-
-        orderItems.forEach((item, idx) => {
-            const li = document.createElement('li');
-            li.className = 'modal-item';
-            li.innerHTML = `
-                <span>${item}</span>
-                <button type="button" class="btn-remove-item" data-index="${idx}">×</button>
-            `;
-            container.appendChild(li);
-
-            const match = item.match(/R\$ ([\d,]+)/);
-            if (match) {
-                const value = parseFloat(match[1].replace(',', '.'));
-                total += value;
-            }
-        });
-
-        if (totalElem) {
-            const totalFormatted = total.toFixed(2).replace('.', ',');
-            totalElem.innerHTML = `<strong>Total: R$ ${totalFormatted}</strong>`;
-        }
-
-        document.querySelectorAll('.btn-remove-item').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const idx = parseInt(btn.dataset.index);
-                orderItems.splice(idx, 1);
-                saveOrderToStorage();
-                if (orderItems.length === 0) {
-                    closeModal();
-                } else {
-                    renderModal();
-                }
-            });
-        });
-    }
-
-    modalForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const name = modalForm.querySelector('input[name="name"]').value;
-        const address = modalForm.querySelector('input[name="address"]').value;
-        const complement = modalForm.querySelector('input[name="complement"]').value;
-        const obs = modalForm.querySelector('textarea[name="obs"]').value;
-
-        let msgParts = ['Olá! Gostaria de fazer o seguinte pedido:'];
-        let total = 0;
-        
-        orderItems.forEach(item => {
-            msgParts.push(`• ${item}`);
-            const match = item.match(/R\$ ([\d,]+)/);
-            if (match) {
-                const value = parseFloat(match[1].replace(',', '.'));
-                total += value;
-            }
-        });
-
-        const totalFormatted = total.toFixed(2).replace('.', ',');
-        msgParts.push('', `Total: R$ ${totalFormatted}`, '', 'Dados da Entrega:');
-        
-        if (name) msgParts.push(`Nome: ${name}`);
-        if (address) msgParts.push(`Endereço: ${address}`);
-        if (complement) msgParts.push(`Complemento: ${complement}`);
-        if (obs) msgParts.push(`Observações: ${obs}`);
-
-        const msg = encodeURIComponent(msgParts.join('\n'));
-        const url = `https://wa.me/${BUSINESS_WHATSAPP}?text=${msg}`;
-        
-        window.open(url, '_blank');
-
-        showSuccessMessage('✓ Pedido enviado! Aguarde o contato.');
-        
-        setTimeout(() => {
-            modalForm.reset();
-            orderItems = [];
-            try {
-                localStorage.removeItem(STORAGE_KEY);
-            } catch (e) {
-                console.error('Erro ao limpar localStorage:', e);
-            }
-            closeModal();
-        }, 500);
-    });
-
-    if (orderItems.length > 0) {
-        renderModal();
-    }
-
-    const carouselPrev = document.getElementById('carousel-prev');
-    const carouselNext = document.getElementById('carousel-next');
-    const carousel = document.querySelector('.carousel');
-
-    if (carousel) {
-        const scrollStep = carousel.offsetWidth * 0.9;
-        const AUTOPLAY_DELAY = 4000; // ms
-        let autoplayInterval = null;
-
-        function scrollNext() {
-            // if we're at (or near) the end, wrap to start
-            if (carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 5) {
-                carousel.scrollLeft = 0;
-            } else {
-                carousel.scrollLeft += scrollStep;
-            }
-        }
-
-        function startAutoplay() {
-            stopAutoplay();
-            autoplayInterval = setInterval(scrollNext, AUTOPLAY_DELAY);
-        }
-
-        function stopAutoplay() {
-            if (autoplayInterval) {
-                clearInterval(autoplayInterval);
-                autoplayInterval = null;
-            }
-        }
-
-        if (carouselPrev) {
-            carouselPrev.addEventListener('click', () => {
-                carousel.scrollLeft -= scrollStep;
-                // restart autoplay so user sees next auto step after interaction
-                startAutoplay();
-            });
-        }
-
-        if (carouselNext) {
-            carouselNext.addEventListener('click', () => {
-                carousel.scrollLeft += scrollStep;
-                startAutoplay();
-            });
-        }
-
-        // pause autoplay while user hovers or touches the carousel
-        carousel.addEventListener('mouseenter', stopAutoplay);
-        carousel.addEventListener('mouseleave', startAutoplay);
-        carousel.addEventListener('touchstart', stopAutoplay, { passive: true });
-        carousel.addEventListener('touchend', () => setTimeout(startAutoplay, 1500));
-
-        // start autoplay initially
-        startAutoplay();
-    }
-});
+document.addEventListener("DOMContentLoaded", init);

@@ -5,26 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LSP Salgados - Artesanais Premium</title>
   <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
-
   <header class="header-minimal">
     <div class="header-content">
       <div class="header-brand">
         <img src="img/Captura de tela 2026-03-04 101855.png" alt="LSP Salgados" class="brand-icon">
         <div class="brand-info">
           <h1>LSP Salgados</h1>
-          <p>Faça ja sua encomenda!</p>
+          <p>Faça já sua encomenda!</p>
         </div>
       </div>
       <a href="https://wa.me/5513996816089" target="_blank" class="btn-whatsapp">
-        🟢 Fale Conosco
+        Fale Conosco
       </a>
     </div>
   </header>
 
-  
   <section class="combos">
     <h2>Promoções</h2>
     <div class="carousel-container">
@@ -32,7 +30,7 @@
         <div class="carousel-item">
           <div class="salgado-card">
             <div class="card-badge">30% OFF</div>
-            <img src="img/20260304_0733_Image Generation_simple_compose_01kjw6gd4bfnp9f5csgdbbqz1p.png" alt="Combo Coxinha" width="240" height="200" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22240%22 height=%22200%22><rect fill=%22%23f0f0f0%22 width=%22240%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>Imagem não disponível</text></svg>'">
+            <img src="img/20260304_0733_Image Generation_simple_compose_01kjw6gd4bfnp9f5csgdbbqz1p.png" alt="Combo Coxinha" width="240" height="200">
             <h3>Combo Tradicional</h3>
             <p class="card-desc">Caixa com 25 salgados, informe os sabores e a quantidade desejada.</p>
             <p class="card-price">R$ 75,00</p>
@@ -43,7 +41,7 @@
         <div class="carousel-item">
           <div class="salgado-card">
             <div class="card-badge">20% OFF</div>
-            <img src="img/20260304_0744_Image Generation_simple_compose_01kjw763kke1xstd30ns7erbxe.png" alt="Pack Bolinhos" width="240" height="200" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22240%22 height=%22200%22><rect fill=%22%23f0f0f0%22 width=%22240%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>Imagem não disponível</text></svg>'">
+            <img src="img/20260304_0744_Image Generation_simple_compose_01kjw763kke1xstd30ns7erbxe.png" alt="Pack Bolinhos" width="240" height="200">
             <h3>Combo Degustação</h3>
             <p class="card-desc">Caixa com 25 salgados, informe os sabores e a quantidade desejada.</p>
             <p class="card-price">R$ 30,00</p>
@@ -54,25 +52,24 @@
         <div class="carousel-item">
           <div class="salgado-card">
             <div class="card-badge">NOVO</div>
-            <img src="img/20260304_0752_Image Generation_simple_compose_01kjw7me2pfcks7xcm9w1y9va7.png" alt="Combo Especial" width="240" height="200" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22240%22 height=%22200%22><rect fill=%22%23f0f0f0%22 width=%22240%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>Imagem não disponível</text></svg>'">
-            <h3>Combo Familia</h3>
+            <img src="img/20260304_0752_Image Generation_simple_compose_01kjw7me2pfcks7xcm9w1y9va7.png" alt="Combo Especial" width="240" height="200">
+            <h3>Combo Família</h3>
             <p class="card-desc">Caixa com 150 salgados, informe os sabores e a quantidade desejada.</p>
             <p class="card-price">R$ 200,00</p>
-            <button class="btn-add-salgado" data-name="Combo Familia" data-price="200" data-type="combo" data-quantity="150">Selecionar</button>
+            <button class="btn-add-salgado" data-name="Combo Família" data-price="200" data-type="combo" data-quantity="150">Selecionar</button>
           </div>
         </div>
       </div>
-      <button class="carousel-prev" id="carousel-prev">❮</button>
-      <button class="carousel-next" id="carousel-next">❯</button>
+      <button class="carousel-prev" id="carousel-prev" aria-label="Voltar promoção">&lsaquo;</button>
+      <button class="carousel-next" id="carousel-next" aria-label="Avançar promoção">&rsaquo;</button>
     </div>
   </section>
 
-  <!-- SALGADOS FRITOS -->
   <section class="salgados-fritos">
     <h2>Salgados Fritos</h2>
     <div class="salgados-grid">
       <div class="salgado-card">
-        <img src="img/20260304_0733_Image Generation_simple_compose_01kjw6gd4bfnp9f5csgdbbqz1p.png" alt="Meio cento fritos" width="280" height="200" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22200%22><rect fill=%22%23f0f0f0%22 width=%22280%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>Imagem não disponível</text></svg>'">
+        <img src="img/20260304_0733_Image Generation_simple_compose_01kjw6gd4bfnp9f5csgdbbqz1p.png" alt="Meio cento fritos" width="280" height="200">
         <h3>Meio cento de salgados</h3>
         <p class="card-desc">Caixa com 50 salgados, informe os sabores e a quantidade desejada</p>
         <p class="card-price">R$ 50,00</p>
@@ -80,7 +77,7 @@
       </div>
 
       <div class="salgado-card">
-        <img src="img/20260304_0752_Image Generation_simple_compose_01kjw7me2pfcks7xcm9w1y9va7.png" alt="Cento fritos" width="280" height="200" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22200%22><rect fill=%22%23f0f0f0%22 width=%22280%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>Imagem não disponível</text></svg>'">
+        <img src="img/20260304_0752_Image Generation_simple_compose_01kjw7me2pfcks7xcm9w1y9va7.png" alt="Cento fritos" width="280" height="200">
         <h3>Cento de Salgados</h3>
         <p class="card-desc">Caixa com 100 salgados, informe os sabores e a quantidade desejada</p>
         <p class="card-price">R$ 75,00</p>
@@ -89,12 +86,11 @@
     </div>
   </section>
 
-  <!-- SALGADOS CONGELADOS -->
   <section class="salgados-congelados">
     <h2>Salgados Congelados</h2>
     <div class="salgados-grid">
       <div class="salgado-card">
-        <img src="img/20260304_0733_Image Generation_simple_compose_01kjw6gd4bfnp9f5csgdbbqz1p.png" alt="Meio cento congelado" width="280" height="200" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22200%22><rect fill=%22%23f0f0f0%22 width=%22280%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>Imagem não disponível</text></svg>'">
+        <img src="img/20260304_0733_Image Generation_simple_compose_01kjw6gd4bfnp9f5csgdbbqz1p.png" alt="Meio cento congelado" width="280" height="200">
         <h3>Meio cento de salgados</h3>
         <p class="card-desc">Caixa com 50 salgados, informe os sabores e a quantidade desejada</p>
         <p class="card-price">R$ 35,00</p>
@@ -102,7 +98,7 @@
       </div>
 
       <div class="salgado-card">
-        <img src="img/20260304_0752_Image Generation_simple_compose_01kjw7me2pfcks7xcm9w1y9va7.png" alt="Cento congelado" width="280" height="200" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22200%22><rect fill=%22%23f0f0f0%22 width=%22280%22 height=%22200%22/><text x=%2250%25%22 y=%2250%25%22 font-size=%2214%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22>Imagem não disponível</text></svg>'">
+        <img src="img/20260304_0752_Image Generation_simple_compose_01kjw7me2pfcks7xcm9w1y9va7.png" alt="Cento congelado" width="280" height="200">
         <h3>Cento de Salgados</h3>
         <p class="card-desc">Caixa com 100 salgados, informe os sabores e a quantidade desejada</p>
         <p class="card-price">R$ 60,00</p>
@@ -111,7 +107,6 @@
     </div>
   </section>
 
-  <!-- MODAL DE CONFIGURAÇÃO PARA CENTO -->
   <div class="modal" id="modal-config">
     <div class="modal-content">
       <div class="modal-header">
@@ -158,19 +153,17 @@
     </div>
   </div>
 
-  <!-- MODAL PEDIDO -->
   <div class="modal" id="modal-order">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Seu Pedido</h2>
         <button class="modal-close" id="btn-close-modal">&times;</button>
       </div>
-      
       <div class="modal-body">
         <ul class="modal-items" id="modal-items"></ul>
         <p class="modal-total" id="modal-total"></p>
         <p class="delivery-note">Entrega a combinar.</p>
-        
+
         <form class="modal-form" id="modal-form">
           <input type="text" name="name" placeholder="Seu Nome" required>
           <input type="text" name="address" placeholder="Endereço de Entrega" required>
@@ -185,7 +178,6 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="footer-container">
       <div class="footer-about">
@@ -201,6 +193,6 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
