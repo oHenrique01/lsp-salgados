@@ -175,6 +175,7 @@ textarea {
 button {
   cursor: pointer;
   min-height: 44px;
+  touch-action: manipulation;
 }
 
 .header-minimal {
@@ -746,6 +747,9 @@ button {
   color: var(--color-brand);
   font-size: 1.1rem;
   font-weight: 900;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  user-select: none;
 }
 
 .qty-control button:hover:not(:disabled) {

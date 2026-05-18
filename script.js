@@ -147,28 +147,57 @@ function handleProductClick(button) {
   addItemToOrder({ name, price });
 }
 
+function changeFlavorQuantity(button) {
+  const input = button.closest(".qty-control").querySelector(".qty-input");
+  const currentTotal = updateConfigTotal();
+  let value = Number(input.value || 0);
+
+  if (button.classList.contains("qty-increase") && currentTotal < configRequiredTotal) {
+    value += 1;
+  }
+
+  if (button.classList.contains("qty-decrease")) {
+    value = Math.max(0, value - 1);
+  }
+
+  input.value = Math.min(value, configRequiredTotal);
+  updateConfigTotal();
+}
+
 function setupConfigForm() {
-  configForm.addEventListener("click", (event) => {
-    const button = event.target;
-    const isQuantityButton =
-      button.classList.contains("qty-increase") || button.classList.contains("qty-decrease");
+  configForm.querySelectorAll(".qty-increase, .qty-decrease").forEach((button) => {
+    let repeatDelay = null;
+    let repeatInterval = null;
 
-    if (!isQuantityButton) return;
-
-    const input = button.closest(".qty-control").querySelector(".qty-input");
-    const currentTotal = updateConfigTotal();
-    let value = Number(input.value || 0);
-
-    if (button.classList.contains("qty-increase") && currentTotal < configRequiredTotal) {
-      value += 1;
+    function stopRepeat() {
+      clearTimeout(repeatDelay);
+      clearInterval(repeatInterval);
+      repeatDelay = null;
+      repeatInterval = null;
     }
 
-    if (button.classList.contains("qty-decrease")) {
-      value = Math.max(0, value - 1);
-    }
+    button.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+      button.setPointerCapture?.(event.pointerId);
+      changeFlavorQuantity(button);
 
-    input.value = Math.min(value, configRequiredTotal);
-    updateConfigTotal();
+      repeatDelay = setTimeout(() => {
+        repeatInterval = setInterval(() => changeFlavorQuantity(button), 85);
+      }, 320);
+    });
+
+    button.addEventListener("pointerup", stopRepeat);
+    button.addEventListener("pointercancel", stopRepeat);
+    button.addEventListener("pointerleave", stopRepeat);
+    button.addEventListener("lostpointercapture", stopRepeat);
+
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      if (event.detail === 0) {
+        changeFlavorQuantity(button);
+      }
+    });
   });
 
   configForm.querySelectorAll(".qty-input").forEach((input) => {
