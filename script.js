@@ -50,8 +50,8 @@ function openConfigModal(requiredTotal, price, itemName) {
   configRequired.textContent = String(configRequiredTotal);
   configTotal.textContent = "0";
   configTitle.textContent = `Personalizar ${configItemName}`;
-  configInfo.innerHTML = `Distribua exatamente <strong>${configRequiredTotal}</strong> salgados entre os tipos desejados. Use os controles para ajustar as quantidades.`;
-  configSubmit.textContent = `Adicionar ${configItemName} (${formatMoney(configPrice)})`;
+  configInfo.innerHTML = `Escolha exatamente <strong>${configRequiredTotal}</strong> unidades.`;
+  configSubmit.textContent = `Adicionar (${formatMoney(configPrice)})`;
 
   updateConfigTotal();
   configModal.style.display = "flex";
@@ -191,7 +191,7 @@ function setupConfigForm() {
     }
 
     if (total < configRequiredTotal) {
-      alert(`Voce deve selecionar exatamente ${configRequiredTotal} salgados para prosseguir.`);
+      alert(`Selecione exatamente ${configRequiredTotal} salgados para prosseguir.`);
       return;
     }
 

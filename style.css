@@ -701,7 +701,7 @@ button {
 
 .config-list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 12px;
   margin: 8px 0;
 }
@@ -718,6 +718,13 @@ button {
 .config-name {
   color: var(--color-text);
   font-weight: 800;
+}
+
+.config-subtitle {
+  margin-top: -8px;
+  color: var(--color-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
 }
 
 .qty-control {
@@ -775,20 +782,21 @@ button {
 .footer-container {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 24px 0;
+  padding: 18px 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
 }
 
 .footer-container h4 {
-  font-size: 0.96rem;
+  font-size: 0.78rem;
+  line-height: 1.2;
 }
 
 .footer-social a {
   color: #b6e4c5;
-  font-size: 0.92rem;
+  font-size: 0.74rem;
   font-weight: 700;
 }
 
@@ -798,7 +806,7 @@ button {
 
 .footer-copy {
   color: rgba(255, 255, 255, 0.66);
-  font-size: 0.82rem;
+  font-size: 0.68rem;
 }
 
 @media (max-width: 860px) {
@@ -883,10 +891,16 @@ button {
   .combos h2,
   .salgados-fritos h2,
   .salgados-congelados h2,
-  .salgados-grid,
-  .carousel-container,
   .footer-container {
     width: min(100% - 40px, 1120px);
+  }
+
+  .salgados-grid {
+    width: min(100% - 40px, 1120px);
+  }
+
+  .carousel-container {
+    width: 100%;
   }
 
   .combos h2,
@@ -918,8 +932,8 @@ button {
   .carousel {
     gap: 12px;
     margin-inline: 0;
-    padding: 4px 0 18px;
-    scroll-padding-inline: 0;
+    padding: 4px 20px 18px;
+    scroll-padding-inline: 20px;
     scrollbar-width: none;
   }
 
@@ -928,8 +942,9 @@ button {
   }
 
   .carousel-item {
-    flex-basis: 92%;
-    scroll-snap-align: center;
+    flex: 0 0 76%;
+    max-width: 300px;
+    scroll-snap-align: start;
   }
 
   .carousel .salgado-card {
@@ -967,7 +982,7 @@ button {
 
   .salgado-card h3 {
     padding: 14px 14px 4px;
-    font-size: 0.94rem;
+    font-size: 0.9rem;
   }
 
   .card-desc,
@@ -976,13 +991,13 @@ button {
   }
 
   .card-desc {
-    font-size: 0.8rem;
+    font-size: 0.76rem;
     line-height: 1.42;
   }
 
   .card-price {
     padding-top: 10px;
-    font-size: 1.12rem;
+    font-size: 1.04rem;
   }
 
   .btn-add-salgado {
@@ -990,7 +1005,7 @@ button {
     min-height: 44px;
     margin: 14px;
     border-radius: 999px;
-    font-size: 0.86rem;
+    font-size: 0.78rem;
     box-shadow: 0 14px 24px rgba(122, 63, 32, 0.22);
   }
 
@@ -1023,6 +1038,18 @@ button {
     padding: 16px;
   }
 
+  .modal-header h2 {
+    font-size: 1.08rem;
+  }
+
+  .modal-body > p,
+  .modal-form input,
+  .modal-form textarea,
+  .config-summary,
+  .delivery-note {
+    font-size: 0.82rem;
+  }
+
   .modal-actions,
   .footer-container {
     flex-direction: column;
@@ -1032,13 +1059,25 @@ button {
 
   .btn-primary,
   .btn-secondary {
-    min-height: 48px;
+    min-height: 44px;
     border-radius: 999px;
+    font-size: 0.82rem;
   }
 
   .config-item {
     grid-template-columns: 1fr;
     border-radius: 14px;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .config-name {
+    font-size: 0.84rem;
+  }
+
+  .config-subtitle {
+    margin-top: -6px;
+    font-size: 0.68rem;
   }
 
   .qty-control {
@@ -1060,7 +1099,19 @@ button {
 
   .footer-container {
     gap: 12px;
-    padding: 22px 0;
+    padding: 16px 0;
+  }
+
+  .footer-container h4 {
+    font-size: 0.72rem;
+  }
+
+  .footer-social a {
+    font-size: 0.68rem;
+  }
+
+  .footer-copy {
+    font-size: 0.62rem;
   }
 }
 
@@ -1068,14 +1119,21 @@ button {
   .combos h2,
   .salgados-fritos h2,
   .salgados-congelados h2,
-  .salgados-grid,
-  .carousel-container,
   .footer-container {
     width: min(100% - 34px, 1120px);
   }
 
+  .salgados-grid {
+    width: min(100% - 34px, 1120px);
+  }
+
+  .carousel-container {
+    width: 100%;
+  }
+
   .carousel-item {
-    flex-basis: 94%;
+    flex-basis: 78%;
+    max-width: 280px;
   }
 
   .salgado-card h3 {
@@ -1083,11 +1141,11 @@ button {
   }
 
   .card-desc {
-    font-size: 0.76rem;
+    font-size: 0.72rem;
   }
 
   .card-price {
-    font-size: 1.06rem;
+    font-size: 1rem;
   }
 
   .btn-add-salgado,

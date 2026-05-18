@@ -114,7 +114,7 @@
         <button class="modal-close" id="btn-close-config">&times;</button>
       </div>
       <div class="modal-body">
-        <p>Distribua exatamente <strong>100</strong> salgados entre os tipos desejados. Use os controles para ajustar as quantidades.</p>
+        <p>Escolha exatamente <strong>100</strong> unidades.</p>
         <form id="config-form">
           <div class="config-list">
             <div class="config-item">
@@ -134,19 +134,28 @@
               </div>
             </div>
             <div class="config-item">
-              <span class="config-name">Bolinha de Carne</span>
+              <span class="config-name">Bolinho de Carne</span>
               <div class="qty-control">
                 <button type="button" class="qty-decrease">-</button>
-                <input type="number" class="qty-input" name="Bolinha de Carne" value="0" min="0" max="100">
+                <input type="number" class="qty-input" name="Bolinho de Carne" value="0" min="0" max="100">
+                <button type="button" class="qty-increase">+</button>
+              </div>
+            </div>
+            <div class="config-item">
+              <span class="config-name">Maravilha</span>
+              <span class="config-subtitle">Presunto e queijo</span>
+              <div class="qty-control">
+                <button type="button" class="qty-decrease">-</button>
+                <input type="number" class="qty-input" name="Maravilha (Presunto e Queijo)" value="0" min="0" max="100">
                 <button type="button" class="qty-increase">+</button>
               </div>
             </div>
           </div>
-          <p class="config-summary">Total selecionado: <span id="config-total">0</span>/<span id="config-required">100</span></p>
+          <p class="config-summary">Total: <span id="config-total">0</span>/<span id="config-required">100</span></p>
           <p class="delivery-note">Entrega a combinar.</p>
           <div class="modal-actions">
             <button type="button" class="btn-secondary" id="btn-cancel-config">Cancelar</button>
-            <button type="submit" class="btn-primary">Adicionar Cento (R$ 75,00)</button>
+            <button type="submit" class="btn-primary">Adicionar (R$ 75,00)</button>
           </div>
         </form>
       </div>
